@@ -12,62 +12,84 @@ class ResetPassword extends StatefulWidget {
 
 class _ResetPasswordState extends State<ResetPassword> {
   TextEditingController _emailTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Login',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+      body: Stack(
+        children: [
+          // Background image with opacity
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/perahu.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.3), // Adjust the opacity
+                  BlendMode.darken,
                 ),
               ),
-              SizedBox(height: 20),
-              Container(
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.grey,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Email',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "",
-                        hintText: "email@example.com",
-                      ),
-                      controller: _emailTextController,
-                    ),
-                    firebaseUIButton(context, 'Reset Password', () {
-                      FirebaseAuth.instance
-                          .sendPasswordResetEmail(
-                              email: _emailTextController.text)
-                          .then((value) => Navigator.of(context).pop());
-                    }),
-                    RememberPas()
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Reset Password',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Change text color to white
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    padding: EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white
+                          .withOpacity(0.8), // Semi-transparent background
+                      border: Border.all(
+                        color: Colors.grey,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Email',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        TextField(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "",
+                            hintText: "email@example.com",
+                          ),
+                          controller: _emailTextController,
+                        ),
+                        SizedBox(height: 16),
+                        firebaseUIButton(context, 'Reset Password', () {
+                          FirebaseAuth.instance
+                              .sendPasswordResetEmail(
+                                  email: _emailTextController.text)
+                              .then((value) => Navigator.of(context).pop());
+                        }),
+                        RememberPas()
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -77,7 +99,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const Text("Remember password? ",
-            style: TextStyle(color: Colors.black)),
+            style: TextStyle(color: Colors.white)),
         GestureDetector(
           onTap: () {
             Navigator.push(context,
@@ -85,13 +107,14 @@ class _ResetPasswordState extends State<ResetPassword> {
           },
           child: const Text(
             "Here",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         )
       ],
     );
   }
 }
+
 
 //   Widget build(BuildContext context) {
 //     return Scaffold(
