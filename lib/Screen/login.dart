@@ -21,98 +21,98 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image with opacity
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/perahu.jpg'),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.3), // Adjust the opacity
+                  Colors.black.withOpacity(0.3),
                   BlendMode.darken,
                 ),
               ),
             ),
           ),
           Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white, // Change text color to white
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    padding: EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white
-                          .withOpacity(0.8), // Semi-transparent background
-                      border: Border.all(
-                        color: Colors.grey,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Login',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Email',
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+                    SizedBox(height: 20),
+                    Container(
+                      padding: EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.8),
+                        border: Border.all(
+                          color: Colors.grey,
                         ),
-                        SizedBox(height: 8),
-                        TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "",
-                            hintText: "email@example.com",
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Email',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
                           ),
-                          controller: _emailTextController,
-                        ),
-                        SizedBox(height: 16), // Add spacing between fields
-                        Text(
-                          'Password',
-                          style: TextStyle(
-                            fontSize: 16,
+                          SizedBox(height: 8),
+                          TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "",
+                              hintText: "email@example.com",
+                            ),
+                            controller: _emailTextController,
                           ),
-                        ),
-                        SizedBox(height: 8),
-                        TextField(
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
+                          SizedBox(height: 16),
+                          Text(
+                            'Password',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
                           ),
-                          controller: _passwordTextController,
-                        ),
-                        SizedBox(height: 16), // Add spacing between fields
-                        forgetPassword(context),
-                        firebaseUIButton(context, 'Sign In', () {
-                          FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
-                                  email: _emailTextController.text,
-                                  password: _passwordTextController.text)
-                              .then((value) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomeScreen()));
-                          }).onError((error, stackTrace) {
-                            print("Error ${error.toString()}");
-                          });
-                        }),
-                        signUpOption()
-                      ],
+                          SizedBox(height: 8),
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                            controller: _passwordTextController,
+                          ),
+                          SizedBox(height: 16),
+                          forgetPassword(context),
+                          firebaseUIButton(context, 'Sign In', () {
+                            FirebaseAuth.instance
+                                .signInWithEmailAndPassword(
+                                    email: _emailTextController.text,
+                                    password: _passwordTextController.text)
+                                .then((value) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomeScreen()));
+                            }).onError((error, stackTrace) {
+                              print("Error ${error.toString()}");
+                            });
+                          }),
+                          signUpOption()
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

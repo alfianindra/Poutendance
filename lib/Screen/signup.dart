@@ -21,14 +21,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image with opacity
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/perahu.jpg'),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.3), // Adjust the opacity
+                  Colors.black.withOpacity(0.3),
                   BlendMode.darken,
                 ),
               ),
@@ -36,7 +35,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
           Center(
             child: SingleChildScrollView(
-              // Menambahkan SingleChildScrollView di sini
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -47,15 +45,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white, // Change text color to white
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(height: 20),
                     Container(
                       padding: EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: Colors.white
-                            .withOpacity(0.8), // Semi-transparent background
+                        color: Colors.white.withOpacity(0.8),
                         border: Border.all(
                           color: Colors.grey,
                         ),
@@ -79,9 +76,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             controller: _userTextController,
                           ),
-                          SizedBox(
-                              height:
-                                  16), // Tambahkan SizedBox untuk spasi antar TextField
+                          SizedBox(height: 16),
                           Text(
                             'Email',
                             style: TextStyle(
@@ -114,9 +109,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             controller: _passwordTextController,
                           ),
-                          SizedBox(
-                              height:
-                                  16), // Tambahkan SizedBox untuk spasi antar elemen
+                          SizedBox(height: 16),
                           firebaseUIButton(context, 'Sign Up', () async {
                             try {
                               UserCredential userCredential = await FirebaseAuth
