@@ -10,6 +10,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? username;
+  String? role;
 
   @override
   void initState() {
@@ -26,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
           .get();
       setState(() {
         username = userDoc['username'];
+        role = userDoc['role'];
       });
     }
   }
@@ -53,6 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text(
                     'Welcome, $username!',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  Text(
+                    'role : $role',
                     style: TextStyle(fontSize: 24),
                   ),
                   SizedBox(height: 20),
