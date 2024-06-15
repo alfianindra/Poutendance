@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:poutendance/Screen/login.dart';
+import 'package:poutendance/Screen/profilekey.dart';
+import 'package:poutendance/Screen/profileuser.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -107,6 +110,36 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _navigateToProfile() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        String role = userDoc['role'];
+        if (role == 'user') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScan()),
+          );
+        } else if (role == 'holder') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfileScreen()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Role tidak terdata')),
+          );
+        }
+      } catch (e) {
+        print('Error fetching user role: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -145,6 +178,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ElevatedButton(
                     onPressed: _signOut,
                     child: Text('Sign Out'),
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _navigateToProfile,
+                    child: Text('Go to Profile'),
                   ),
                 ],
               ),
