@@ -10,12 +10,16 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String? username;
+  String? initials;
   String? role;
+  bool isHolderCheckedIn = false;
+  bool isUserCheckedIn = false;
 
   @override
   void initState() {
     super.initState();
     _getUsername();
+    _checkHolderStatus();
   }
 
   Future<void> _getUsername() async {
@@ -28,6 +32,68 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         username = userDoc['username'];
         role = userDoc['role'];
+        initials = _getInitials(userDoc['username']);
+      });
+    }
+  }
+
+  String _getInitials(String name) {
+    List<String> nameParts = name.split(' ');
+    String initials = '';
+    for (String part in nameParts) {
+      if (part.isNotEmpty) {
+        initials += part[0];
+      }
+    }
+    return initials.toUpperCase();
+  }
+
+  Future<void> _checkHolderStatus() async {
+    QuerySnapshot holderDocs = await FirebaseFirestore.instance
+        .collection('checkin')
+        .where('role', isEqualTo: 'holder')
+        .where('checked_in', isEqualTo: true)
+        .get();
+    if (holderDocs.docs.isNotEmpty) {
+      setState(() {
+        isHolderCheckedIn = true;
+      });
+    }
+  }
+
+  Future<void> _checkIn() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String docPath = 'checkin/${user.uid}';
+      await FirebaseFirestore.instance.doc(docPath).set({
+        'username': username,
+        'initials': initials,
+        'check_in': DateTime.now(),
+        'checked_in': true,
+        'role': role,
+      });
+      setState(() {
+        if (role == 'holder') {
+          isHolderCheckedIn = true;
+        }
+        isUserCheckedIn = true;
+      });
+    }
+  }
+
+  Future<void> _checkOut() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String docPath = 'checkin/${user.uid}';
+      await FirebaseFirestore.instance.doc(docPath).update({
+        'check_out': DateTime.now(),
+        'checked_in': false,
+      });
+      setState(() {
+        if (role == 'holder') {
+          isHolderCheckedIn = false;
+        }
+        isUserCheckedIn = false;
       });
     }
   }
@@ -58,9 +124,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 24),
                   ),
                   Text(
-                    'role : $role',
+                    'Role: $role',
                     style: TextStyle(fontSize: 24),
                   ),
+                  SizedBox(height: 20),
+                  if (role == 'holder') ...[
+                    ElevatedButton(
+                      onPressed: isHolderCheckedIn ? _checkOut : _checkIn,
+                      child: Text(isHolderCheckedIn ? 'Check Out' : 'Check In'),
+                    ),
+                  ] else if (role == 'user') ...[
+                    ElevatedButton(
+                      onPressed: isHolderCheckedIn && !isUserCheckedIn
+                          ? _checkIn
+                          : (isUserCheckedIn ? _checkOut : null),
+                      child: Text(isUserCheckedIn ? 'Check Out' : 'Check In'),
+                    ),
+                  ],
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _signOut,
