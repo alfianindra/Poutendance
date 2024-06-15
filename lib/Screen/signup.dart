@@ -125,6 +125,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   .set({
                                 'username': _userTextController.text,
                                 'email': _emailTextController.text,
+                                'role': 'user',
                               });
 
                               Navigator.push(
