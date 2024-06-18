@@ -13,8 +13,13 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _passwordTextController = TextEditingController();
+  TextEditingController _confirmPasswordTextController =
+      TextEditingController();
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _userTextController = TextEditingController();
+  TextEditingController _facultyTextController = TextEditingController();
+
+  String _errorMessage = "";
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +54,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     SizedBox(height: 20),
+                    if (_errorMessage.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.all(8.0),
+                        color: Colors.red,
+                        child: Text(
+                          _errorMessage,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    SizedBox(height: 10),
                     Container(
                       padding: EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
@@ -92,9 +107,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             controller: _emailTextController,
                           ),
-                          SizedBox(
-                              height:
-                                  16), // Tambahkan SizedBox untuk spasi antar TextField
+                          SizedBox(height: 16),
+                          Text(
+                            'Faculty',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "",
+                              hintText: "Faculty",
+                            ),
+                            controller: _facultyTextController,
+                          ),
+                          SizedBox(height: 16),
                           Text(
                             'Password',
                             style: TextStyle(
@@ -110,7 +139,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: _passwordTextController,
                           ),
                           SizedBox(height: 16),
+                          Text(
+                            'Confirm Password',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                            controller: _confirmPasswordTextController,
+                          ),
+                          SizedBox(height: 16),
                           firebaseUIButton(context, 'Sign Up', () async {
+                            if (_passwordTextController.text !=
+                                _confirmPasswordTextController.text) {
+                              setState(() {
+                                _errorMessage = "Passwords do not match";
+                              });
+                              return;
+                            }
+
                             try {
                               UserCredential userCredential = await FirebaseAuth
                                   .instance
@@ -119,12 +171,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 password: _passwordTextController.text,
                               );
 
+                              var usernameQuery = await FirebaseFirestore
+                                  .instance
+                                  .collection('users')
+                                  .where('username',
+                                      isEqualTo: _userTextController.text)
+                                  .get();
+
+                              if (usernameQuery.docs.isNotEmpty) {
+                                setState(() {
+                                  _errorMessage = "Username already in use";
+                                });
+                                return;
+                              }
+
                               await FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(userCredential.user?.uid)
                                   .set({
                                 'username': _userTextController.text,
                                 'email': _emailTextController.text,
+                                'faculty': _facultyTextController.text,
                                 'role': 'user',
                               });
 
@@ -133,8 +200,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 MaterialPageRoute(
                                     builder: (context) => SignInScreen()),
                               );
+                            } on FirebaseAuthException catch (error) {
+                              setState(() {
+                                if (error.code == 'email-already-in-use') {
+                                  _errorMessage = "Email already in use";
+                                } else {
+                                  _errorMessage = "Error: ${error.message}";
+                                }
+                              });
                             } catch (error) {
-                              print("Error ${error.toString()}");
+                              setState(() {
+                                _errorMessage = "Error: ${error.toString()}";
+                              });
                             }
                           }),
                           signUpOption()
