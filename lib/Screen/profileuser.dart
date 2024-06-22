@@ -17,9 +17,7 @@ class _ProfileScanState extends State<ProfileScan> {
   String? faculty;
   String? role;
   User? user;
-  String? role;
   bool isLoading = true;
-  String? faculty;
 
   @override
   void initState() {
