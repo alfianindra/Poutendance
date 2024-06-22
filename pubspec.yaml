@@ -41,6 +41,7 @@ dependencies:
   cloud_firestore: ^4.14.0
   qr_flutter: ^4.1.0
   qr_code_scanner: ^1.0.1
+  intl: ^0.19.0
 
 
 dev_dependencies:
@@ -68,6 +69,14 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/perahu.jpg
+    - assets/header.png
+    - assets/actions.png
+    - assets/map.png
+    - assets/Key.png
+
+
+
+
     # - 
 
   # An image asset can refer to one or more resolution-specific "variants", see
