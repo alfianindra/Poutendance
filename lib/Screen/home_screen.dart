@@ -21,8 +21,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _getUsername();
-    _checkHolderStatus();
+    _refreshData();
+  }
+
+  Future<void> _refreshData() async {
+    await _getUsername();
+    await _checkHolderStatus();
   }
 
   Future<void> _getUsername() async {
@@ -146,10 +150,15 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text('Home'),
       ),
-      body: Center(
-        child: username == null
-            ? CircularProgressIndicator()
-            : Column(
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: ListView(
+          padding: EdgeInsets.all(16.0),
+          children: [
+            if (username == null)
+              Center(child: CircularProgressIndicator())
+            else
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
@@ -186,6 +195,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+          ],
+        ),
       ),
     );
   }

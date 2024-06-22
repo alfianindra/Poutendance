@@ -13,6 +13,8 @@ class ProfileScan extends StatefulWidget {
 
 class _ProfileScanState extends State<ProfileScan> {
   String? username;
+  String? faculty;
+  String? role;
   User? user;
   bool isLoading = true;
 
@@ -32,6 +34,8 @@ class _ProfileScanState extends State<ProfileScan> {
             .get();
         setState(() {
           username = userDoc['username'];
+          faculty = userDoc['faculty'];
+          role = userDoc['role'];
           isLoading = false;
         });
       } catch (e) {
@@ -108,6 +112,16 @@ class _ProfileScanState extends State<ProfileScan> {
                         SizedBox(height: 10),
                         Text(
                           user!.email ?? 'No email',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          faculty ?? 'No faculty',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          role ?? 'No role',
                           style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 20),
