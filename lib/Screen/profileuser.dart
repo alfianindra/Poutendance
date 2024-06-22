@@ -14,6 +14,8 @@ class ProfileScan extends StatefulWidget {
 
 class _ProfileScanState extends State<ProfileScan> {
   String? username;
+  String? faculty;
+  String? role;
   User? user;
   String? role;
   bool isLoading = true;
@@ -204,6 +206,16 @@ class _ProfileScanState extends State<ProfileScan> {
                         SizedBox(height: 20),
                         Divider(
                           color: Colors.white,
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          faculty ?? 'No faculty',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          role ?? 'No role',
+                          style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
