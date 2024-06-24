@@ -18,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController _emailTextController = TextEditingController();
   TextEditingController _userTextController = TextEditingController();
   TextEditingController _facultyTextController = TextEditingController();
+  TextEditingController _npmController = TextEditingController();
 
   String _errorMessage = "";
 
@@ -123,6 +124,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             controller: _facultyTextController,
                           ),
+                          Text(
+                            'NPM',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "",
+                              hintText: "Npm",
+                            ),
+                            controller: _npmController,
+                          ),
                           SizedBox(height: 16),
                           Text(
                             'Password',
@@ -184,7 +200,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 });
                                 return;
                               }
-
                               await FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(userCredential.user?.uid)
@@ -193,6 +208,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 'email': _emailTextController.text,
                                 'faculty': _facultyTextController.text,
                                 'role': 'user',
+                                'npm': _npmController.text
                               });
 
                               Navigator.push(
