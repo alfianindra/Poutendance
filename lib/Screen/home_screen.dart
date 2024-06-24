@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (role == 'user') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ProfileScreen()),
+            MaterialPageRoute(builder: (context) => ProfileScan()),
           );
         } else if (role == 'holder') {
           Navigator.push(
