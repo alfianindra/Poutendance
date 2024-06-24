@@ -17,9 +17,7 @@ class _ProfileScanState extends State<ProfileScan> {
   String? faculty;
   String? role;
   User? user;
-  String? role;
   bool isLoading = true;
-  String? faculty;
   String npm = 'no-npm found';
 
   @override
@@ -167,7 +165,6 @@ class _ProfileScanState extends State<ProfileScan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-
                         username ?? 'Loading...',
                         style: TextStyle(
                           color: Colors.white,

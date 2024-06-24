@@ -18,9 +18,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String? faculty;
   String? role;
   User? user;
-  String? role;
   bool isLoading = true;
-  String? faculty;
   String npm = 'no-npm found';
 
   Map<String, String> dataUser = {};
