@@ -17,7 +17,10 @@ class _ProfileScanState extends State<ProfileScan> {
   String? faculty;
   String? role;
   User? user;
+  String? role;
   bool isLoading = true;
+  String? faculty;
+  String npm = 'no-npm found';
 
   @override
   void initState() {
@@ -37,6 +40,7 @@ class _ProfileScanState extends State<ProfileScan> {
           username = userDoc['username'];
           role = userDoc['role'];
           faculty = userDoc['faculty'];
+          npm = userDoc['npm'] ?? 'no-npm found';
           isLoading = false;
         });
       } catch (e) {
@@ -86,6 +90,51 @@ class _ProfileScanState extends State<ProfileScan> {
     );
   }
 
+  Future<void> _changeName(String newName) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .update({'username': newName});
+      setState(() {
+        username = newName;
+      });
+      print('Username updated successfully');
+    } catch (e) {
+      print('Error updating username: $e');
+    }
+  }
+
+  Future<void> _changeEmail(String newEmail) async {
+    try {
+      await user!.verifyBeforeUpdateEmail(newEmail);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Verification link sent to new email. Please verify to complete the change.',
+          ),
+        ),
+      );
+    } catch (e) {
+      print('Error sending verification email: $e');
+    }
+  }
+
+  Future<void> _changeFaculty(String newFaculty) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .update({'faculty': newFaculty});
+      setState(() {
+        faculty = newFaculty;
+      });
+      print('Faculty updated successfully');
+    } catch (e) {
+      print('Error updating faculty: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,8 +167,8 @@ class _ProfileScanState extends State<ProfileScan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        username ??
-                            'Loading...', // Menghindari null dengan memberikan nilai default
+
+                        username ?? 'Loading...',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -136,7 +185,7 @@ class _ProfileScanState extends State<ProfileScan> {
                       ),
                     ],
                   ),
-                  Spacer(), // Membuat jarak antara username dan actions
+                  Spacer(),
                   IconButton(
                     onPressed: () {
                       _logout();
@@ -164,19 +213,19 @@ class _ProfileScanState extends State<ProfileScan> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: ListView(
+                      padding: EdgeInsets.symmetric(vertical: 10),
                       children: [
                         SizedBox(height: 20),
                         CircleAvatar(
                           radius: 50,
-                          backgroundImage:
-                              AssetImage('assets/perahu.jpg') as ImageProvider,
+                          backgroundImage: AssetImage('assets/perahu.jpg'),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              textAlign: TextAlign.center,
                               username ?? 'No username',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 32,
                                 color: Colors.white,
@@ -191,29 +240,51 @@ class _ProfileScanState extends State<ProfileScan> {
                           ],
                         ),
                         Text(
-                          textAlign: TextAlign.center,
                           faculty ?? 'No Fakultas',
+                          textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
                         SizedBox(height: 10),
                         Text(
-                          textAlign: TextAlign.center,
                           user?.email ?? 'No email',
+                          textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
                         SizedBox(height: 20),
                         Divider(
                           color: Colors.white,
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          faculty ?? 'No faculty',
-                          style: TextStyle(fontSize: 16),
+                        buildItemInformation(
+                          username: username,
+                          label: "Name",
+                          onPressed: () => _showChangeNameDialog(context),
                         ),
-                        SizedBox(height: 10),
-                        Text(
-                          role ?? 'No role',
-                          style: TextStyle(fontSize: 16),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        buildItemInformation(
+                          username: faculty,
+                          label: "Fakultas",
+                          onPressed: () => _showChangeFacultyDialog(context),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        buildItemInformation(
+                          username: user!.email!,
+                          label: "Email",
+                          onPressed: () => _showChangeEmailDialog(context),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        buildItemInformation(
+                          username: "*****",
+                          label: "Password",
+                          onPressed: _changePassword,
+                        ),
+                        SizedBox(
+                          height: 10,
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
@@ -227,6 +298,13 @@ class _ProfileScanState extends State<ProfileScan> {
                           child: Text('Scan The QR'),
                         ),
                         ElevatedButton(
+                          onPressed: _logout,
+                          child: Text('Change Account'),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white),
                           onPressed: _deleteAccount,
                           child: Text('Delete Account'),
                         ),
@@ -234,7 +312,166 @@ class _ProfileScanState extends State<ProfileScan> {
                     ),
                   ),
                 )
-              : Center(child: Text('No user logged in')),
+              : Center(
+                  child: Text('No user logged in'),
+                ),
+    );
+  }
+
+  // Method to show dialog for changing name
+  Future<void> _showChangeNameDialog(BuildContext context) async {
+    TextEditingController _nameController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Change Name'),
+          content: TextField(
+            controller: _nameController,
+            decoration: InputDecoration(hintText: "Enter new name"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                String newName = _nameController.text.trim();
+                if (newName.isNotEmpty) {
+                  _changeName(newName);
+                  Navigator.of(context).pop();
+                } else {
+                  // Handle case where input is empty
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Method to show dialog for changing faculty
+  Future<void> _showChangeFacultyDialog(BuildContext context) async {
+    TextEditingController _facultyController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Change Faculty'),
+          content: TextField(
+            controller: _facultyController,
+            decoration: InputDecoration(hintText: "Enter new faculty"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                String newFaculty = _facultyController.text.trim();
+                if (newFaculty.isNotEmpty) {
+                  _changeFaculty(newFaculty);
+                  Navigator.of(context).pop();
+                } else {
+                  // Handle case where input is empty
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Method to show dialog for changing email
+  Future<void> _showChangeEmailDialog(BuildContext context) async {
+    TextEditingController _emailController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Change Email'),
+          content: TextField(
+            controller: _emailController,
+            decoration: InputDecoration(hintText: "Enter new email"),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                String newEmail = _emailController.text.trim();
+                if (newEmail.isNotEmpty) {
+                  _changeEmail(newEmail);
+                  Navigator.of(context).pop();
+                } else {
+                  // Handle case where input is empty
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class buildItemInformation extends StatelessWidget {
+  final String? username;
+  final String? label;
+  final Function()? onPressed;
+
+  buildItemInformation({Key? key, this.username, this.label, this.onPressed})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label!,
+              style: TextStyle(color: Colors.white),
+            ),
+            Text(
+              username!,
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xff56727B),
+            foregroundColor: Colors.white,
+          ),
+          onPressed: onPressed,
+          child: Text(
+            'Change',
+          ),
+        ),
+      ],
     );
   }
 }

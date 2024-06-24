@@ -409,7 +409,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 DateFormat('-HH:mm').format(dateTimeCheckout) ??
                                     '';
                           }
-
                           String tanggal =
                               DateFormat('EEEE, dd MMMM yyyy').format(dateTime);
 
