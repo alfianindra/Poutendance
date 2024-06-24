@@ -15,6 +15,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? username;
+  String? faculty;
+  String? role;
   User? user;
   String? role;
   bool isLoading = true;
@@ -246,6 +248,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(
                           height: 10,
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          faculty ?? 'No faculty',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          role ?? 'No role',
+                          style: TextStyle(fontSize: 16),
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(

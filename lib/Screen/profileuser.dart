@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:poutendance/Screen/Login.dart';
 import 'package:poutendance/Screen/qrkey_scan.dart';
 
@@ -13,6 +14,8 @@ class ProfileScan extends StatefulWidget {
 
 class _ProfileScanState extends State<ProfileScan> {
   String? username;
+  String? faculty;
+  String? role;
   User? user;
   String? role;
   bool isLoading = true;
@@ -38,7 +41,6 @@ class _ProfileScanState extends State<ProfileScan> {
           role = userDoc['role'];
           faculty = userDoc['faculty'];
           npm = userDoc['npm'] ?? 'no-npm found';
-
           isLoading = false;
         });
       } catch (e) {
@@ -165,6 +167,7 @@ class _ProfileScanState extends State<ProfileScan> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
+
                         username ?? 'Loading...',
                         style: TextStyle(
                           color: Colors.white,
